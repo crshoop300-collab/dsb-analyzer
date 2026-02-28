@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="./favicon.ico" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DSB AI Risk & Value Analyzer — Find mispriced betting markets, evaluate risk in real-time, and make smarter decisions. Powered by DSB Edge.">
+  <title>DSB AI Risk & Value Analyzer | Daily Sports Bets</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,900;1,700;1,900&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="./base.css">
+  <link rel="stylesheet" href="./style.css">
+
+  <!-- Skip to content -->
+  <a href="#main-content" class="sr-only">Skip to main content</a>
+  <!-- App-specific additions -->
+  <style>
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .direction-option:hover {
+      border-color: var(--color-accent) !important;
+      background: var(--color-accent-subtle) !important;
+    }
+    #bet-game:disabled { opacity: 0.5; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+
+<!-- ============================================
+     SITE WRAPPER
+     ============================================ -->
+<div class="site-wrapper">
+
+  <!-- ============================================
+       HEADER
+       ============================================ -->
+  <header class="site-header" role="banner">
+    <div class="header-inner">
+      <!-- Logo -->
+      <a href="https://dailysportsbets.com" target="_blank" rel="noopener noreferrer" class="logo-link" aria-label="Daily Sports Bets — Home">
+        <div class="logo-block">
+          <span class="logo-dsb">DSB</span>
+          <span class="logo-name">Daily Sports Bets</span>
+          <span class="logo-tagline">Where winning comes easy...</span>
+        </div>
+      </a>
+
+      <div class="header-divider" aria-hidden="true"></div>
+
+      <!-- Tool identity -->
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <div style="font-family:var(--font-display);font-size:clamp(0.9rem,1.5vw,1.1rem);font-weight:900;text-transform:uppercase;letter-spacing:0.05em;line-height:1;color:var(--color-text)">AI Risk &amp; Value Analyzer</div>
+        <div class="last-updated" id="last-updated">Updated <strong>loading...</strong></div>
+      </div>
+
+      <!-- Actions -->
+      <div class="header-actions">
+        <button class="btn-export" onclick="exportAnalysis()" aria-label="Export analysis report">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export
+        </button>
+        <button class="btn-upload-cta" onclick="openUploadModal()" aria-label="Analyze your own bet">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Analyze My Bet
+        </button>
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================
+       SPORT NAV TABS
+       ============================================ -->
+  <nav class="sport-nav" role="navigation" aria-label="Sport filters">
+    <div class="sport-nav-inner" id="sport-tabs" role="tablist">
+      <!-- Rendered by JS -->
+    </div>
+  </nav>
+
+  <!-- ============================================
+       MAIN CONTENT
+       ============================================ -->
+  <main class="main-content" id="main-content">
+
+    <!-- KPI CARDS -->
+    <section class="section-gap" aria-label="Key performance indicators">
+      <div class="kpi-grid" id="kpi-grid">
+        <!-- Skeleton placeholders -->
+        <div class="kpi-card">
+          <div class="kpi-label"><div class="skeleton" style="width:120px;height:12px"></div></div>
+          <div class="kpi-value"><div class="skeleton" style="width:60px;height:40px;margin:8px 0"></div></div>
+          <div class="kpi-delta"><div class="skeleton" style="width:80px;height:10px"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label"><div class="skeleton" style="width:100px;height:12px"></div></div>
+          <div class="kpi-value"><div class="skeleton" style="width:60px;height:40px;margin:8px 0"></div></div>
+          <div class="kpi-delta"><div class="skeleton" style="width:80px;height:10px"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label"><div class="skeleton" style="width:130px;height:12px"></div></div>
+          <div class="kpi-value"><div class="skeleton" style="width:60px;height:40px;margin:8px 0"></div></div>
+          <div class="kpi-delta"><div class="skeleton" style="width:80px;height:10px"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label"><div class="skeleton" style="width:110px;height:12px"></div></div>
+          <div class="kpi-value"><div class="skeleton" style="width:60px;height:40px;margin:8px 0"></div></div>
+          <div class="kpi-delta"><div class="skeleton" style="width:80px;height:10px"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DSB EDGE SCORE LEGEND -->
+    <section class="section-gap" aria-label="Edge Score legend">
+      <div style="display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap;padding:var(--space-3) var(--space-5);background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);">
+        <span style="font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--color-text-muted);white-space:nowrap">Edge Score:</span>
+        <span style="display:inline-flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);font-weight:700;color:var(--color-elite)"><span style="width:8px;height:8px;border-radius:50%;background:var(--color-elite);display:inline-block"></span>80–100 Elite Value</span>
+        <span style="display:inline-flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);font-weight:700;color:var(--color-strong)"><span style="width:8px;height:8px;border-radius:50%;background:var(--color-strong);display:inline-block"></span>60–79 Strong Value</span>
+        <span style="display:inline-flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);font-weight:700;color:var(--color-fair)"><span style="width:8px;height:8px;border-radius:50%;background:var(--color-fair);display:inline-block"></span>40–59 Fair Market</span>
+        <span style="display:inline-flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);font-weight:700;color:var(--color-overpriced)"><span style="width:8px;height:8px;border-radius:50%;background:var(--color-overpriced);display:inline-block"></span>20–39 Overpriced</span>
+        <span style="display:inline-flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);font-weight:700;color:var(--color-trap)"><span style="width:8px;height:8px;border-radius:50%;background:var(--color-trap);display:inline-block"></span>0–19 Trap Bet</span>
+        <span style="margin-left:auto;font-size:var(--text-xs);color:var(--color-text-faint);font-style:italic">Proprietary DSB Edge Algorithm</span>
+      </div>
+    </section>
+
+    <!-- HEAT MAP -->
+    <section class="heatmap-section section-gap" aria-label="Game heat map">
+      <div class="section-header">
+        <h2 class="section-title">Heat Map</h2>
+        <span class="section-subtitle">Click any cell to jump to game analysis</span>
+      </div>
+      <div class="heatmap-grid" id="heatmap-grid">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar" role="search">
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="search" class="search-input" id="search-input" placeholder="Search team or matchup..." aria-label="Search games">
+      </div>
+      <label class="sort-label" for="sort-select">Sort by:</label>
+      <select class="sort-select" id="sort-select" aria-label="Sort games">
+        <option value="edgeScore">Edge Score (High → Low)</option>
+        <option value="risk">Risk Level (Low → High)</option>
+        <option value="sport">Sport</option>
+        <option value="time">Game Time</option>
+      </select>
+    </div>
+
+    <!-- DASHBOARD LAYOUT: MAIN + SIDEBAR -->
+    <div class="dashboard-layout">
+
+      <!-- MAIN GAMES AREA -->
+      <div>
+        <section class="games-section" aria-label="Game analysis cards">
+          <div class="section-header">
+            <h2 class="section-title">Game Analysis</h2>
+            <span class="section-subtitle" id="games-count"></span>
+          </div>
+          <div class="games-grid" id="games-grid">
+            <!-- Rendered by JS -->
+          </div>
+        </section>
+      </div>
+
+      <!-- SIDEBAR -->
+      <aside class="sidebar" aria-label="Leaderboards and alerts">
+
+        <!-- Top Value Plays -->
+        <div class="sidebar-card">
+          <div class="sidebar-card-header">
+            <h3 class="sidebar-card-title" style="color:var(--color-elite)">🏆 Top Value Plays</h3>
+          </div>
+          <ul class="sidebar-list" id="sidebar-top-plays" role="list">
+            <!-- Rendered by JS -->
+          </ul>
+        </div>
+
+        <!-- Trending Picks -->
+        <div class="sidebar-card">
+          <div class="sidebar-card-header">
+            <h3 class="sidebar-card-title">📈 Trending Picks</h3>
+          </div>
+          <ul class="sidebar-list" id="sidebar-trending" role="list">
+            <!-- Rendered by JS -->
+          </ul>
+        </div>
+
+        <!-- Trap Alerts -->
+        <div class="sidebar-card">
+          <div class="sidebar-card-header">
+            <h3 class="sidebar-card-title" style="color:var(--color-trap)">⚠️ Trap Alerts</h3>
+            <span style="font-size:var(--text-xs);color:var(--color-text-faint);font-weight:600">AVOID</span>
+          </div>
+          <div id="sidebar-traps">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Upload CTA (sidebar version) -->
+        <div style="padding:var(--space-5);background:var(--color-accent-subtle);border:1.5px solid rgba(45,181,72,0.3);border-radius:var(--radius-xl);text-align:center;">
+          <div style="font-family:var(--font-display);font-size:var(--text-lg);font-weight:900;text-transform:uppercase;color:var(--color-accent);margin-bottom:var(--space-2)">Got a Bet in Mind?</div>
+          <p style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-4);max-width:100%">Enter your bet details and get an instant Edge Score + risk analysis.</p>
+          <button class="btn-upload-cta" style="width:100%;justify-content:center" onclick="openUploadModal()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Analyze My Bet
+          </button>
+        </div>
+
+      </aside>
+    </div>
+
+  </main>
+
+  <!-- ============================================
+       FOOTER
+       ============================================ -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="https://dailysportsbets.com" target="_blank" rel="noopener noreferrer" class="logo-link">
+          <div class="logo-block">
+            <span class="logo-dsb">DSB</span>
+            <span class="logo-name">Daily Sports Bets</span>
+            <span class="logo-tagline">Where winning comes easy...</span>
+          </div>
+        </a>
+        <div class="footer-powered">Powered by DSB Edge — Proprietary AI Analysis Engine</div>
+      </div>
+      <div class="footer-links">
+        <a href="https://dailysportsbets.com" target="_blank" rel="noopener noreferrer" class="footer-link">Back to DSB Blog</a>
+        <a href="https://dailysportsbets.com/picks" target="_blank" rel="noopener noreferrer" class="footer-link">Today's Picks</a>
+        <a href="https://dailysportsbets.com/betting-guide" target="_blank" rel="noopener noreferrer" class="footer-link">Betting Guide</a>
+        <a href="https://dailysportsbets.com/about" target="_blank" rel="noopener noreferrer" class="footer-link">About DSB</a>
+      </div>
+    </div>
+    <div class="footer-disclaimer">
+      <p>The DSB AI Risk &amp; Value Analyzer is an engagement and analysis tool provided for entertainment and informational purposes only. DSB Edge scores are algorithmic estimates and do not guarantee any outcome. Sports betting involves risk and should only be done responsibly with funds you can afford to lose. If you or someone you know has a gambling problem, call the National Problem Gambling Helpline at 1-800-522-4700. DSB does not accept wagers and is not a licensed sportsbook. Always check local laws before wagering.</p>
+    </div>
+  </footer>
+
+</div><!-- end site-wrapper -->
+
+<!-- ============================================
+     UPLOAD BET MODAL
+     ============================================ -->
+<div class="upload-overlay" id="upload-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="upload-modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modal-title">
+        <span style="color:var(--color-accent)">Analyze</span> My Bet
+      </h2>
+      <button class="modal-close" onclick="closeUploadModal()" aria-label="Close modal">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:var(--text-sm);color:var(--color-text-muted);margin-bottom:var(--space-6);max-width:100%">Select a live game from the board, choose your bet type and direction, then get an instant DSB Edge Score with expected value calculation.</p>
+
+      <form id="bet-form" onsubmit="analyzeBet(event)">
+        <div class="form-grid">
+
+          <!-- Step 1: Sport -->
+          <div class="form-group">
+            <label class="form-label" for="bet-sport">1. Sport</label>
+            <select class="form-select" id="bet-sport" required onchange="onBetSportChange()">
+              <option value="">Select sport...</option>
+            </select>
+          </div>
+
+          <!-- Step 2: Game -->
+          <div class="form-group">
+            <label class="form-label" for="bet-game">2. Game</label>
+            <select class="form-select" id="bet-game" disabled onchange="onBetGameChange()">
+              <option value="">Select game...</option>
+            </select>
+          </div>
+
+          <!-- Step 3: Bet Type -->
+          <div class="form-group">
+            <label class="form-label" for="bet-type">3. Bet Type</label>
+            <select class="form-select" id="bet-type" required onchange="onBetTypeChange()">
+              <option value="">Select type...</option>
+              <option value="spread">Spread / Puck Line / Run Line</option>
+              <option value="ml">Moneyline</option>
+              <option value="total">Over / Under (Total)</option>
+              <option value="prop">Player Prop</option>
+              <option value="parlay">Parlay</option>
+            </select>
+          </div>
+
+          <!-- Wager Amount -->
+          <div class="form-group">
+            <label class="form-label" for="bet-wager">Wager Amount ($)</label>
+            <input type="number" class="form-input" id="bet-wager" placeholder="100" min="1" value="100">
+          </div>
+
+        </div>
+
+        <!-- Step 4: Direction Selector (populated dynamically) -->
+        <div id="direction-panel" style="display:none;margin-bottom:var(--space-5)">
+          <div class="form-label" style="margin-bottom:var(--space-3)">4. Select Your Side</div>
+          <div id="direction-options" style="display:flex;flex-direction:column;gap:var(--space-2)"></div>
+        </div>
+
+        <!-- Team name fields: hidden by default, auto-filled when game selected. Shown for Prop/Parlay/manual. -->
+        <div id="manual-team-fields" style="display:none">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="bet-away-visible">Away Team</label>
+              <input type="text" class="form-input" id="bet-away-visible" placeholder="e.g. Cowboys" oninput="document.getElementById('bet-away').value=this.value">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="bet-home-visible">Home Team</label>
+              <input type="text" class="form-input" id="bet-home-visible" placeholder="e.g. Eagles" oninput="document.getElementById('bet-home').value=this.value">
+            </div>
+          </div>
+        </div>
+
+        <!-- Hidden team fields — auto-filled from game selection or synced from visible inputs -->
+        <input type="hidden" id="bet-away" value="">
+        <input type="hidden" id="bet-home" value="">
+
+        <!-- Prop/Parlay fields -->
+        <div id="prop-parlay-fields" style="display:none">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="prop-desc">Prop / Parlay Description</label>
+              <input type="text" class="form-input" id="prop-desc" placeholder="e.g. LeBron over 25.5 pts">
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 5: Odds (auto-filled from direction or manual) -->
+        <div class="form-grid" style="margin-top:var(--space-4)">
+          <div class="form-group">
+            <label class="form-label" for="bet-odds">Odds (auto-filled or enter manually)</label>
+            <input type="text" class="form-input" id="bet-odds" placeholder="e.g. -110 or +145" required pattern="[+-]?\d+">
+          </div>
+        </div>
+
+        <button type="submit" class="btn-analyze">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline;vertical-align:middle;margin-right:6px"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          Run DSB Edge Analysis
+        </button>
+      </form>
+
+      <!-- Analysis Result -->
+      <div class="analysis-result" id="analysis-result" role="status" aria-live="polite">
+        <div class="result-score-row">
+          <div class="result-score-block">
+            <div class="result-score-num" id="result-score">—</div>
+            <div class="result-score-label">Edge Score</div>
+            <div class="result-score-label" id="result-tier-badge" style="font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-top:var(--space-1)"></div>
+          </div>
+          <div class="result-details">
+            <div class="result-title" id="result-game-title"></div>
+            <div class="result-ev" id="result-ev"></div>
+          </div>
+        </div>
+
+        <div class="result-section">
+          <div class="result-section-title">Risk Assessment</div>
+          <div class="result-text" id="result-risk-text"></div>
+        </div>
+
+        <div class="result-section">
+          <div class="result-section-title">DSB Recommendation</div>
+          <div class="alternative-suggestion">
+            <div class="alt-text" id="result-alt-text"></div>
+            <div class="alt-score" id="result-alt-score"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- Pre-fetched odds data (no network needed) -->
+<script src="./odds-data.js"></script>
+
+<!-- APP JS -->
+<script src="./app.js"></script>
+
+<!-- Post-render: update games count -->
+<script>
+  // Update games count display after render
+  function updateGamesCount() {
+    const visibleCards = document.querySelectorAll('.game-card').length;
+    const countEl = document.getElementById('games-count');
+    if (countEl) countEl.textContent = `${visibleCards} game${visibleCards !== 1 ? 's' : ''}`;
+  }
+
+  // Hook into tab changes and search
+  const origSetTab = typeof setTab !== 'undefined' ? setTab : null;
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(updateGamesCount, 200);
+  });
+
+  // Re-update after any filter change
+  ['search-input', 'sort-select'].forEach(id => {
+    document.getElementById(id)?.addEventListener('change', () => setTimeout(updateGamesCount, 100));
+    document.getElementById(id)?.addEventListener('input', () => setTimeout(updateGamesCount, 100));
+  });
+</script>
+
+</body>
+</html>
